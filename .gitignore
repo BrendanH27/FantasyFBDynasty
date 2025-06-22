@@ -9,7 +9,9 @@ backend/**/*.js
 backend/**/*.js.map
 
 # Database
-backend/database/fantasy_db.db
+backend/database/*.db
+*.db-journal
+backend/database/*.csv
 
 # Environment files
 .env
