@@ -9,7 +9,7 @@ backend/**/*.js
 backend/**/*.js.map
 
 # Database
-backend/database/*.db
+*.db
 *.db-journal
 backend/database/*.csv
 
