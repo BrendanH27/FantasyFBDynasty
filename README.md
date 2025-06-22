@@ -4,7 +4,7 @@
 1. Install Dependencies
 In both frontend/ and backend/ directories, you’ll need to install the necessary Node modules.
 
-# From the root directory of the project
+From the root directory of the project
 
 cd backend
 npm install
