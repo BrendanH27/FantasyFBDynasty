@@ -4,7 +4,7 @@
         name TEXT NOT NULL,
         available_spots INTEGER,
         settings TEXT,
-        commissioner_id INTEGER,
-        FOREIGN KEY (commissioner_id) REFERENCES users(id)
+        owner_id INTEGER,
+        FOREIGN KEY (owner_id) REFERENCES users(id)
     );
     
