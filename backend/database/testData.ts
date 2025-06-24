@@ -135,6 +135,7 @@ export async function importPlayers(): Promise<void> {
 }
 
 export async function dumpPlayersTable() {
+  await importPlayers();
   const db = await getDbConnection();
 
   const rows = await db.all(`SELECT * FROM players`);

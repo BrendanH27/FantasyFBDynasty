@@ -1,6 +1,7 @@
 import { getDbConnection } from './db';
 import fs from 'fs/promises';
 import path from 'path';
+import { dumpPlayersTable } from './testData';
 
 export async function db_setup() {
   const db = await getDbConnection();
