@@ -7,8 +7,9 @@ import path from 'path';
 const PLAYER_CSV_URL = 'https://github.com/nflverse/nflverse-data/releases/download/players/players.csv';
 const LOCAL_CSV = path.join(__dirname, 'temp_players.csv');
 
-// Allowed positions
+// Paremeters for test data
 const allowedPositions = new Set(['QB', 'HB', 'WR', 'TE', 'K']);
+const maxAge = 45;
 
 async function downloadCsv(url: string, dest: string): Promise<void> {
   const res = await fetch(url);
@@ -40,31 +41,45 @@ export async function importPlayers(): Promise<void> {
       .on('data', (row) => {
         try {
           const pos = (row.position || '').toUpperCase();
-          const status = (row.status || '').toLowerCase();
+          const status = (row.status_short_description || '').toUpperCase();
+          const team = row.current_team_id;
+          const rookieYear = parseInt(row.rookie_year || '0');
+          const birthYear = row.birth_date?.split('-')[0];
+          const age = birthYear ? (2025 - parseInt(birthYear)) : null;
 
-          // Filter out retired players and only allowed positions
-          if (status !== 'retired' && allowedPositions.has(pos)) {
-            const birthYear = row.birth_date?.split('-')[0];
-            const age = birthYear ? (2025 - parseInt(birthYear)) : null;
-            const gsis_id = row.gsis_id?.trim();
+          // Filter: must have valid status, be a valid position, not too old
+          if (!status || !allowedPositions.has(pos) || age === null || age > maxAge) return;
 
-            if (gsis_id) {
-              playersToInsert.push({
-                first_name: row.first_name || '',
-                last_name: row.last_name || '',
-                nflverse_id: gsis_id,
-                position: pos,
-                nfl_team: row.team_abbr || '',
-                age,
-              });
-            } else {
-              console.warn(`Skipping player with missing nflverse_id: ${row.first_name} ${row.last_name}`);
-            }
+          // Status must be active or recent free agent
+          const validStatus = ['ACTIVE', 'UFA', 'FA', 'R/UFA', 'UFA/R'];
+          if (!validStatus.includes(status)) return;
+
+          // Player must either be on a team or recently entered the league
+          const isOnTeam = !!team;
+          const isRecentRookie = rookieYear >= 2022;
+
+          if (!isOnTeam && !isRecentRookie) return;
+
+
+          const gsis_id = row.gsis_id?.trim();
+          if (!gsis_id) {
+            console.warn(`Skipping player with missing nflverse_id: ${row.first_name} ${row.last_name}`);
+            return;
           }
+
+          playersToInsert.push({
+            first_name: row.first_name || '',
+            last_name: row.last_name || '',
+            nflverse_id: gsis_id,
+            position: pos,
+            nfl_team: row.team_abbr || '',
+            age,
+          });
         } catch (err) {
           console.error('Parse error:', err);
         }
       })
+
       .on('end', () => {
         console.log(`Finished reading CSV. Valid players to insert: ${playersToInsert.length}`);
         resolve();
@@ -90,7 +105,10 @@ export async function importPlayers(): Promise<void> {
   `);
 
   let insertedCount = 0;
-  for (const player of playersToInsert) {
+  const total = playersToInsert.length;
+
+  for (let i = 0; i < total; i++) {
+    const player = playersToInsert[i];
     try {
       const result = await insert.run(
         player.first_name,
@@ -102,12 +120,44 @@ export async function importPlayers(): Promise<void> {
       );
       if (result.changes && result.changes > 0) insertedCount++;
     } catch (err) {
-      console.error('Insert error:', err);
+      console.error(`Insert error for ${player.first_name} ${player.last_name}:`, err);
     }
+
+    // Print progress on the same line
+    process.stdout.write(`\rInserting players: ${i + 1}/${total}`);
   }
+
 
   await insert.finalize();
   fs.unlinkSync(LOCAL_CSV);
 
   console.log(`✅ Imported ${insertedCount} players.`);
+}
+
+export async function dumpPlayersTable() {
+  const db = await getDbConnection();
+
+  const rows = await db.all(`SELECT * FROM players`);
+  if (!rows || rows.length === 0) {
+    console.warn('⚠️ No rows found in players table.');
+    return;
+  }
+
+  let dumpSQL = '';
+
+  rows.forEach(row => {
+    const keys = Object.keys(row).join(', ');
+    const values = Object.values(row)
+      .map(val => {
+        if (val === null || val === undefined) return 'NULL';
+        if (typeof val === 'string') return `'${val.replace(/'/g, "''")}'`;
+        return val;
+      })
+      .join(', ');
+    dumpSQL += `INSERT INTO players (${keys}) VALUES (${values});\n`;
+  });
+
+
+  fs.writeFileSync('players_dump.sql', dumpSQL);
+  console.log(`✅ Dumped ${rows.length} player rows to schema_sql/players.sql`);
 }
