@@ -1,9 +1,9 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import { getDbConnection } from '../../database/db';
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+router.get('/', async (req: Request, res: Response) => {
   try {
     const db = await getDbConnection();
     const users = await db.all('SELECT * FROM users');
@@ -14,7 +14,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', async (req: Request, res: Response) => {
   const { username, email, password, nickname } = req.body;
 
   // Missing field (nickname is optional)
