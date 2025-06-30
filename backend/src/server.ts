@@ -1,11 +1,14 @@
 import express from 'express';
-import { getDbConnection } from '../database/db';
 import { db_setup } from '../database/setup';
+import players_router from './routes/players';
+import users_router from './routes/users';
 
 const app = express();
 const PORT = 3000;
 
 app.use(express.json());
+app.use('/players', players_router);
+app.use('/users', users_router);
 
 app.put('/db_setup', async (req, res) => {
   try {
@@ -16,17 +19,6 @@ app.put('/db_setup', async (req, res) => {
   } catch (error) {
     console.error('Error failed to setup db:', error);
     res.status(500).json({ error: 'Failed to setup db' });
-  }
-});
-
-app.get('/players', async (req, res) => {
-  try {
-    const db = await getDbConnection();
-    const teams = await db.all('SELECT * FROM players');
-    res.json(teams);
-  } catch (error) {
-    console.error('Error fetching teams:', error);
-    res.status(500).json({ error: 'Failed to fetch teams' });
   }
 });
 
