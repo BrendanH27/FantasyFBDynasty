@@ -44,16 +44,31 @@ router.get('/position/:position', async (req: Request, res: Response) => {
 });
 
 // should probably search for first or last name or both
-// Get players by last name 
-router.get('/name/:last_name', async (req: Request, res: Response) => {
-  const { last_name } = req.params;
+// Get players by name 
+router.get('/name/:name', async (req: Request, res: Response) => {
+  const { name } = req.params;
+  const name_parts = name.trim().split(/\s+/); // Split by whitespace
+
   try {
     const db = await getDbConnection();
-    const players = await db.all('SELECT * FROM players WHERE LOWER(last_name) = LOWER(?)', [last_name]);
+
+    let query = 'SELECT * FROM players WHERE ';
+    const conditions: string[] = [];
+    const values: string[] = [];
+
+    // Flexible name search
+    for (const part of name_parts) {
+      conditions.push('(LOWER(first_name) LIKE LOWER(?) OR LOWER(last_name) LIKE LOWER(?))');
+      values.push(`%${part}%`, `%${part}%`);
+    }
+
+    query += conditions.join(' OR ');
+
+    const players = await db.all(query, values);
     res.json(players);
   } catch (error) {
-    console.error('Error fetching players by last name:', error);
-    res.status(500).json({ error: 'Failed to fetch players by last name' });
+    console.error('Error fetching players by name:', error);
+    res.status(500).json({ error: 'Failed to fetch players by name' });
   }
 });
 
