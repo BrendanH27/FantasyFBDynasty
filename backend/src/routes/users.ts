@@ -7,10 +7,12 @@ router.get('/', async (req: Request, res: Response) => {
   try {
     const db = await getDbConnection();
     const users = await db.all('SELECT * FROM users');
-    res.json(users);
+    res.status(200).json(users);
+    return;
   } catch (error) {
     console.error('Error fetching users: ', error);
     res.status(500).json({ error: 'Failed to fetch users' });
+    return;
   }
 });
 
@@ -31,9 +33,11 @@ router.post('/', async (req: Request, res: Response) => {
     );
 
     res.status(201).json({ userId: result.lastID });
+    return;
   } catch (error) {
     console.error('Error creating user:', error);
     res.status(500).json({ error: 'Failed to create user' });
+    return;
   }
 });
 

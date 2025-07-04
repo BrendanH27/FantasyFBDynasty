@@ -8,10 +8,12 @@ router.get('/', async (req: Request, res: Response) => {
   try {
     const db = await getDbConnection();
     const players = await db.all('SELECT * FROM players');
-    res.json(players);
+    res.status(200).json(players);
+    return;
   } catch (error) {
     console.error('Error fetching teams:', error);
     res.status(500).json({ error: 'Failed to fetch teams' });
+    return;
   }
 });
 
@@ -22,10 +24,12 @@ router.get('/nfl/:nfl_team', async (req: Request, res: Response) => {
   try {
     const db = await getDbConnection();
     const players = await db.all('SELECT * FROM players WHERE LOWER(nfl_team) = LOWER(?)', [nfl_team]);
-    res.json(players);
+    res.status(200).json(players);
+    return;
   } catch (error) {
     console.error('Error fetching players by team:', error);
     res.status(500).json({ error: 'Failed to fetch players by team' });
+    return;
   }
 });
 
@@ -36,10 +40,12 @@ router.get('/position/:position', async (req: Request, res: Response) => {
   try {
     const db = await getDbConnection();
     const players = await db.all('SELECT * FROM players WHERE LOWER(position) = LOWER(?)', [position]);
-    res.json(players);
+    res.status(200).json(players);
+    return;
   } catch (error) {
     console.error('Error fetching players by position:', error);
     res.status(500).json({ error: 'Failed to fetch players by position' });
+    return;
   }
 });
 
@@ -65,10 +71,12 @@ router.get('/name/:name', async (req: Request, res: Response) => {
     query += conditions.join(' OR ');
 
     const players = await db.all(query, values);
-    res.json(players);
+    res.status(200).json(players);
+    return;
   } catch (error) {
     console.error('Error fetching players by name:', error);
     res.status(500).json({ error: 'Failed to fetch players by name' });
+    return;
   }
 });
 
