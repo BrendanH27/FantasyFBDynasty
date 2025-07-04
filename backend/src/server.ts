@@ -8,7 +8,7 @@ import league_membership_router from './routes/league_membership';
 import team_players_router from './routes/team_players';
 
 const app = express();
-const PORT = 3000;
+const PORT = 3001;
 
 app.use(express.json());
 app.use('/players', players_router);
