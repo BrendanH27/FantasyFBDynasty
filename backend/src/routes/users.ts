@@ -41,4 +41,31 @@ router.post('/', async (req: Request, res: Response) => {
   }
 });
 
+// Update a users info
+router.put('/:id', async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const {
+    username,
+    email,
+    password,
+    nickname
+  } = req.body;
+
+  try {
+    const db = await getDbConnection();
+    await db.run(
+      `UPDATE users SET username = ?, email = ?, password = ?, nickname = ? WHERE id = ?`,
+      [username, email, password, nickname ?? null, id]
+    );
+
+    const updated = await db.get('SELECT * FROM users WHERE id = ?', [id]);
+    res.status(200).json(updated);
+    return;
+  } catch (error) {
+    console.error('Error updating user:', error);
+    res.status(500).json({ error: 'Failed to update user' });
+    return;
+  }
+});
+
 export default router;
