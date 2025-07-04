@@ -15,8 +15,8 @@ app.use('/players', players_router);
 app.use('/users', users_router);
 app.use('/leagues', league_router);
 app.use('/draft_picks', draft_picks_router);
-app.use('./league_membership', league_membership_router);
-app.use('./team_players', team_players_router);
+app.use('/league_membership', league_membership_router);
+app.use('/team_players', team_players_router);
 
 app.put('/db_setup', async (req, res) => {
   try {
