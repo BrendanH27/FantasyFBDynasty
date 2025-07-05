@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import { db_setup } from '../database/setup';
 import players_router from './routes/players';
 import users_router from './routes/users';
@@ -11,6 +12,13 @@ const app = express();
 const PORT = 3001;
 
 app.use(express.json());
+app.use(
+  cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  })
+);
+
 app.use('/players', players_router);
 app.use('/users', users_router);
 app.use('/leagues', league_router);

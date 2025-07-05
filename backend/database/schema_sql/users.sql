@@ -4,6 +4,7 @@
         username TEXT UNIQUE NOT NULL,
         email TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
-        nickname TEXT
+        nickname TEXT,
+        isAdmin BOOLEAN
     );
     
