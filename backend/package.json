@@ -7,7 +7,6 @@
     "build": "tsc",
     "start": " node src/server.js",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts"
-
   },
   "keywords": [],
   "author": "",
@@ -22,8 +21,10 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.2",
     "csv-parser": "^3.2.0",
     "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
     "node-fetch": "^2.7.0",
     "pg": "^8.16.2",
     "sqlite": "^5.1.1",

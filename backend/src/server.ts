@@ -1,5 +1,6 @@
 import express from 'express';
 import { db_setup } from '../database/setup';
+import auth_router from './routes/auth';
 import players_router from './routes/players';
 import users_router from './routes/users';
 import league_router from './routes/leagues'
@@ -11,6 +12,7 @@ const app = express();
 const PORT = 3000;
 
 app.use(express.json());
+app.use('/auth', auth_router);
 app.use('/players', players_router);
 app.use('/users', users_router);
 app.use('/leagues', league_router);
