@@ -7,6 +7,7 @@ import league_router from './routes/leagues'
 import draft_picks_router from './routes/draft_picks';
 import league_membership_router from './routes/league_membership';
 import team_players_router from './routes/team_players';
+import teams_router from './routes/teams';
 
 const app = express();
 const PORT = 3001;
@@ -25,6 +26,7 @@ app.use('/leagues', league_router);
 app.use('/draft_picks', draft_picks_router);
 app.use('/league_membership', league_membership_router);
 app.use('/team_players', team_players_router);
+app.use('/teams', teams_router);
 
 app.put('/db_setup', async (req, res) => {
   try {

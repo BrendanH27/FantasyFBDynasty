@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { URLS } from '../constants';
-import { SecureFetch } from '../constants';
+import { URLS, SecureFetch } from '../constants';
+import { Link } from 'react-router-dom';
 
 type League = {
   id: number;
@@ -75,7 +75,9 @@ const HomePage: React.FC = () => {
         <ul>
           {leagues.map(league => (
             <li key={league.id}>
-              <strong>{league.name}</strong> – {league.available_spots} spot{league.available_spots !== 1 ? 's' : ''} open
+              <Link to={`/league/${league.id}`}>
+                <strong>{league.name}</strong> – {league.available_spots} spot{league.available_spots !== 1 ? 's' : ''} open
+              </Link>
             </li>
           ))}
         </ul>
