@@ -18,22 +18,40 @@ router.get('/', async (_req: Request, res: Response) => {
 });
 
 // Get players by team ID
-router.get('/team/:team_id', async (req: Request, res: Response) => {
-  const { team_id } = req.params;
+router.get('/team/:teamId', async (req: Request, res: Response) => {
+  const { teamId } = req.params;
+
   try {
     const db = await getDbConnection();
-    const players = await db.all(
-      'SELECT * FROM team_players WHERE team_id = ?',
-      [team_id]
-    );
+
+    const players = await db.all(`
+      SELECT 
+        tp.id AS team_player_id,
+        tp.contract_value,
+        tp.contract_years,
+        tp.acquired_date,
+        tp.status,
+        tp.draft_pick_id,
+        p.id AS id,
+        p.first_name,
+        p.last_name,
+        p.position,
+        p.nfl_team,
+        p.age,
+        p.nflverse_id
+      FROM team_players tp
+      JOIN players p ON tp.player_id = p.id
+      WHERE tp.team_id = ?
+    `, [teamId]);
     res.status(200).json(players);
     return;
   } catch (error) {
-    console.error('Error fetching players by team:', error);
-    res.status(500).json({ error: 'Failed to fetch players' });
+    console.error('Error fetching players for team:', error);
+    res.status(500).json({ error: 'Failed to fetch players for team' });
     return;
   }
 });
+
 
 // Get teams by player ID
 router.get('/player/:player_id', async (req: Request, res: Response) => {

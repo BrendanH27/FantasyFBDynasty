@@ -72,4 +72,25 @@ router.get('/name/:name', async (req: Request, res: Response) => {
   }
 });
 
+// Get player by ID
+router.get('/:id', async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const db = await getDbConnection();
+    const player = await db.get('SELECT * FROM players WHERE id = ?', [id]);
+
+    if (!player) {
+      res.status(404).json({ error: 'Player not found' });
+      return;
+    }
+
+    res.json(player);
+  } catch (error) {
+    console.error('Error fetching player by ID:', error);
+    res.status(500).json({ error: 'Failed to fetch player' });
+  }
+});
+
+
 export default router;
