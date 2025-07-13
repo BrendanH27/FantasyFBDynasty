@@ -13,6 +13,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.0.3",
     "@types/node-fetch": "^2.6.12",
     "@types/sqlite3": "^5.1.0",

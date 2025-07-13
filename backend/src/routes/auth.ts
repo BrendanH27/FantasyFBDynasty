@@ -1,8 +1,8 @@
 import express, { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
-// import jwt from 'jsonwebtoken'; // Eventually used
+import jwt from 'jsonwebtoken';
 import { getDbConnection } from '../../database/db';
-// import { auth_middleware } from '../middleware/auth_middleware'; // Also eventually used
+// import { auth_middleware } from '../middleware/auth_middleware';
 
 const router = express.Router();
 
@@ -42,28 +42,17 @@ router.post('/register', async (req: Request, res: Response) => {
 });
 
 router.post('/login', async (req: Request, res: Response) => {
-  const { email, username, password } = req.body;
+  const { email, password } = req.body;
 
-  if (!email && !username) {
-    res.status(400).json({ error: 'Please provide an email or username.' });
-    return;
-  } else if (!password) {
-    res.status(400).json({ error: 'Please provide a password.' });
+  if (!email || !password) {
+    res.status(400).json({ error: 'Email and password are required.' });
     return;
   }
 
   try {
     const db = await getDbConnection();
 
-    const user = email
-      ? await db.get(
-        'SELECT * FROM users WHERE LOWER(email) = LOWER(?)',
-        [email],
-      )
-      : await db.get(
-        'SELECT * FROM users WHERE LOWER(username) = LOWER(?)',
-        [username],
-      );
+    const user = await db.get('SELECT * FROM users WHERE LOWER(email) = LOWER(?)', [email.trim().toLowerCase()]);
 
     if (!user) {
       res.status(401).json({ error: 'Invalid credentials' });
@@ -75,7 +64,17 @@ router.post('/login', async (req: Request, res: Response) => {
       res.status(401).json({ error: 'Invalid credentials' });
       return;
     }
-    res.status(200).json({ message: 'Login successful', user: { id: user.id, username: user.username }, });
+    const token = jwt.sign(
+      { userId: user.id, username: user.username },
+      process.env.JWT_SECRET!,
+      { expiresIn: '2h' }
+    );
+
+    res.status(200).json({
+      message: 'Login successful',
+      token,
+      user: { id: user.id, username: user.username },
+    });
     return;
   } catch (err) {
     console.error('Error during login:', err);
