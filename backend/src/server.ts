@@ -7,9 +7,11 @@ import league_router from './routes/leagues'
 import draft_picks_router from './routes/draft_picks';
 import league_membership_router from './routes/league_membership';
 import team_players_router from './routes/team_players';
+import dotenv from 'dotenv';
 
 const app = express();
 const PORT = 3000;
+dotenv.config();
 
 app.use(express.json());
 app.use('/auth', auth_router);
