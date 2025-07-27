@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { URLS, SecureFetch } from '../constants';
+import FreeAgentsModal from '../components/freeagentsmodal';
 
 type Team = {
   id: number;
@@ -13,6 +14,7 @@ const LeaguePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [teams, setTeams] = useState<Team[]>([]);
   const [leagueName, setLeagueName] = useState('');
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     const fetchLeagueData = async () => {
@@ -41,6 +43,10 @@ const LeaguePage: React.FC = () => {
           </li>
         ))}
       </ul>
+
+      <button onClick={() => setShowModal(true)}>View Free Agents</button>
+
+      {showModal && <FreeAgentsModal leagueId={Number(id)} onClose={() => setShowModal(false)} />}
     </div>
   );
 };
