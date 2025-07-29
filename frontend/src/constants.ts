@@ -76,6 +76,7 @@ export const URLS = {
   // Team Players
   API_GET_TEAM_PLAYERS: `${BASE_API_URL}/team_players`,
   API_GET_TEAM_PLAYERS_BY_TEAM: (teamId: number) => `${BASE_API_URL}/team_players/team/${teamId}`,
+  API_GET_FREE_AGENTS_BY_LEAGUE: (leagueId: number) => `${BASE_API_URL}/team_players/free_agents/league/${leagueId}`,
 
   // Teams
   API_GET_TEAMS: `${BASE_API_URL}/teams`,

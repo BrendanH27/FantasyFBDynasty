@@ -71,6 +71,38 @@ router.get('/player/:player_id', async (req: Request, res: Response) => {
   }
 });
 
+// Get free agents
+router.get('/free_agents/league/:leagueId', async (req: Request, res: Response) => {
+  const { leagueId } = req.params;
+
+  if (!leagueId) {
+    res.status(400).json({ error: 'leagueId is required' });
+    return;
+  }
+
+  try {
+    const db = await getDbConnection();
+
+    const freeAgents = await db.all(`
+      SELECT * FROM players
+      WHERE id NOT IN (
+        SELECT tp.player_id
+        FROM team_players tp
+        JOIN teams t ON tp.team_id = t.id
+        WHERE t.league_id = ?
+      )
+    `, [leagueId]);
+
+    res.status(200).json(freeAgents);
+    return;
+  } catch (error) {
+    console.error('Error fetching free agents:', error);
+    res.status(500).json({ error: 'Failed to fetch free agents' });
+    return;
+  }
+});
+
+
 // Add a player to a team
 router.post('/', async (req: Request, res: Response) => {
   const {
@@ -167,5 +199,7 @@ router.delete('/:id', async (req: Request, res: Response) => {
     return;
   }
 });
+
+
 
 export default router;
