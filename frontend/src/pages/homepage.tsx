@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { URLS, SecureFetch } from '../constants';
 import { Link } from 'react-router-dom';
 
@@ -28,10 +29,18 @@ const HomePage: React.FC = () => {
     fetchLeagues();
   }, []);
 
-  const handleSignIn = (e: React.FormEvent) => {
+  const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Sign in with', email, password);
-    setShowModal(false);
+    try {
+      const response = await axios.post('http://localhost:3001/auth/login',
+        { email, password },
+        { withCredentials: true }
+      );
+      console.log('Sign in with', email, password);
+      setShowModal(false);
+    } catch (err) {
+      console.error('Login failed', err);
+    }
   };
 
   return (
