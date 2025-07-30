@@ -42,6 +42,7 @@ router.post('/register', async (req: Request, res: Response) => {
 });
 
 router.post('/login', async (req: Request, res: Response) => {
+  console.log('JWT_SECRET:', process.env.JWT_SECRET); // should print a real value
   const { email, password } = req.body;
 
   if (!email || !password) {
