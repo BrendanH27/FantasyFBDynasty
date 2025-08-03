@@ -1,4 +1,5 @@
 import express, { Request, Response } from 'express';
+import bcrypt from 'bcryptjs';
 import { getDbConnection } from '../../database/db';
 
 const router = express.Router();
@@ -53,9 +54,17 @@ router.put('/:id', async (req: Request, res: Response) => {
 
   try {
     const db = await getDbConnection();
+
+    const currentUser = await db.get('SELECT * FROM users WHERE id = ?', [id]);
+    if (!currentUser) {
+      res.status(404).json({ error: 'User not found' });
+      return;
+    }
+
+    const hashedPassword = password ? await bcrypt.hash(password, 12) : currentUser.password;
     await db.run(
       `UPDATE users SET username = ?, email = ?, password = ?, nickname = ? WHERE id = ?`,
-      [username, email, password, nickname ?? null, id]
+      [username ?? currentUser.username, email ?? currentUser.email, hashedPassword, nickname ?? currentUser.nickname, id]
     );
 
     const updated = await db.get('SELECT * FROM users WHERE id = ?', [id]);
