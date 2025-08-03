@@ -73,8 +73,9 @@ export const URLS = {
   API_GET_DRAFT_PICKS_BY_LEAGUE: (leagueId: number) => `${BASE_API_URL}/draft_picks/league/${leagueId}`,
 
   // League Memberships
-  API_GET_MEMBERSHIPS: `${BASE_API_URL}/memberships`,
-  API_GET_MEMBERSHIPS_BY_LEAGUE: (leagueId: number) => `${BASE_API_URL}/memberships/league/${leagueId}`,
+  API_GET_MEMBERSHIPS: `${BASE_API_URL}/league_membership`,
+  API_GET_MEMBERSHIPS_BY_LEAGUE: (leagueId: number) => `${BASE_API_URL}/league_membership/league/${leagueId}`,
+  API_GET_MEMBERSHIPS_BY_USER_ID: (userId: number) => `${BASE_API_URL}/league_membership/user/${userId}`,
 
   // Team Players
   API_GET_TEAM_PLAYERS: `${BASE_API_URL}/team_players`,
