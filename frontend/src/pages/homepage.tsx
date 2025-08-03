@@ -28,11 +28,36 @@ const HomePage: React.FC = () => {
     fetchLeagues();
   }, []);
 
-  const handleSignIn = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Sign in with', email, password);
+  const handleSignIn = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  try {
+    const response = await SecureFetch(URLS.API_LOGIN_USER, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      alert(data.error || 'Login failed');
+      return;
+    }
+
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+
+    console.log('Logged in as:', data.user.username);
     setShowModal(false);
-  };
+  } catch (err) {
+    console.error('Login error:', err);
+    alert('An error occurred during login.');
+  }
+};
+
 
   return (
     <div className="home">

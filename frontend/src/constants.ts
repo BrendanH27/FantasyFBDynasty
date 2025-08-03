@@ -49,6 +49,9 @@ export const SecureFetch = async (
 export const URLS = {
   BASE_API_URL,
 
+  //Auth routes
+  API_LOGIN_USER: `${BASE_API_URL}/auth/login`,
+
   // League routes
   API_GET_LEAGUES: `${BASE_API_URL}/leagues`,
   API_GET_LEAGUE_BY_ID: (id: number) => `${BASE_API_URL}/leagues/${id}`,
