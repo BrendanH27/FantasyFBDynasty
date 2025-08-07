@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
 import { db_setup } from '../database/setup';
 import auth_router from './routes/auth';
 import players_router from './routes/players';
@@ -13,7 +14,7 @@ import teams_router from './routes/teams';
 
 const app = express();
 const PORT = 3001;
-dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 app.use(express.json());
 app.use(
