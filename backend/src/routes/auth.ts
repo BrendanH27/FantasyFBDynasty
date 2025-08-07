@@ -70,6 +70,13 @@ router.post('/login', async (req: Request, res: Response) => {
       { expiresIn: '2h' }
     );
 
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 20 * 60 * 1000, // 20 minutes
+    });
+
     res.status(200).json({
       message: 'Login successful',
       token,
