@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { URLS, SecureFetch } from '../constants';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../shared/authcontext';
@@ -21,18 +20,23 @@ type UserLeagueMembership = {
 
 
 const HomePage: React.FC = () => {
-  const { user, login, logout } = useAuth();
+  const { user, loading, login, logout } = useAuth();
   const [leagues, setLeagues] = useState<League[]>([]);
   const [myLeagues, setMyLeagues] = useState<UserLeagueMembership[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loginError, setLoginError] = useState<string>('');
 
   const fetchLeagues = async () => {
     try {
-      const res = await SecureFetch(URLS.API_GET_LEAGUES);
-      const data = await res.json();
-      setLeagues(data);
+      const res = await SecureFetch(URLS.API_GET_LEAGUES, {
+        skipErrorRedirect: true
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setLeagues(data);
+      }
     } catch (err) {
       console.error('Error fetching leagues:', err);
     }
@@ -43,6 +47,8 @@ const HomePage: React.FC = () => {
     try {
       const res = await SecureFetch(URLS.API_GET_MEMBERSHIPS_BY_USER_ID(user.id), {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        credentials: 'include',
+        skipErrorRedirect: true
       });
       if (!res.ok) throw new Error('Failed to fetch my leagues');
       const data = await res.json();
@@ -60,6 +66,7 @@ const HomePage: React.FC = () => {
     if (user) {
       fetchMyLeagues();
       setShowModal(false);
+      setLoginError('');
     } else {
       setMyLeagues([]);
     }
@@ -67,14 +74,21 @@ const HomePage: React.FC = () => {
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoginError('');
+
     const success = await login(email, password);
+    if (loading) return <div>Loading...</div>;
     if (!success) {
-      alert('Login failed');
+      setLoginError('Invalid email or password');
       return;
     }
     setEmail('');
     setPassword('');
   };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="home">
@@ -131,10 +145,10 @@ const HomePage: React.FC = () => {
             <ul>
               {myLeagues.map(league => (
                 <li key={league.id}>
-  <Link to={`/league/${league.league_id}`}>
-    <strong>{league.league_name}</strong>
-  </Link>
-</li>
+                  <Link to={`/league/${league.league_id}`}>
+                    <strong>{league.league_name}</strong>
+                  </Link>
+                </li>
 
               ))}
             </ul>
