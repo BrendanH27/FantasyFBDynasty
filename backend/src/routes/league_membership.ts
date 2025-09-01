@@ -40,10 +40,12 @@ router.get('/user/:user_id', async (req: Request, res: Response) => {
   const { user_id } = req.params;
   try {
     const db = await getDbConnection();
-    const memberships = await db.all(
-      'SELECT * FROM league_memberships WHERE user_id = ?',
-      [user_id]
-    );
+    const memberships = await db.all(`
+      SELECT lm.*, l.name AS league_name
+      FROM league_memberships lm
+      JOIN leagues l ON l.id = lm.league_id
+      WHERE lm.user_id = ?
+    `, [user_id]);
     res.status(200).json(memberships);
     return;
   } catch (error) {
