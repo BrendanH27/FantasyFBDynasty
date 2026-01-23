@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { URLS, SecureFetch } from '../constants';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../shared/authcontext';
+import '../stylesheets/homepage.css';
 
 type League = {
   id: number;
@@ -24,9 +25,6 @@ const HomePage: React.FC = () => {
   const [leagues, setLeagues] = useState<League[]>([]);
   const [myLeagues, setMyLeagues] = useState<UserLeagueMembership[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loginError, setLoginError] = useState<string>('');
 
   const fetchLeagues = async () => {
     try {
@@ -66,25 +64,11 @@ const HomePage: React.FC = () => {
     if (user) {
       fetchMyLeagues();
       setShowModal(false);
-      setLoginError('');
     } else {
       setMyLeagues([]);
     }
   }, [user]);
 
-  const handleSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoginError('');
-
-    const success = await login(email, password);
-    if (loading) return <div>Loading...</div>;
-    if (!success) {
-      setLoginError('Invalid email or password');
-      return;
-    }
-    setEmail('');
-    setPassword('');
-  };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -92,86 +76,55 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="home">
-      <header>
-        <h1>Fantasy Football Dynasty</h1>
-        {!user ? (
-          <button onClick={() => setShowModal(true)}>Sign In</button>
-        ) : (
-          <>
-            <span>Welcome, {user.email}!</span>
-            <button onClick={logout} style={{ marginLeft: '1rem' }}>
-              Log Out
-            </button>
-          </>
-        )}
-      </header>
-
-      {showModal && !user && (
-        <div className="modal-backdrop">
-          <div className="modal">
-            <h2>Sign In</h2>
-            <form onSubmit={handleSignIn}>
-              <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                required
-                onChange={e => setEmail(e.target.value)}
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                required
-                onChange={e => setPassword(e.target.value)}
-              />
-              <div className="modal-actions">
-                <button type="submit">Submit</button>
-                <button type="button" onClick={() => setShowModal(false)}>
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {user && (
-        <section className="my-leagues">
-          <h2>My Leagues</h2>
-          {myLeagues.length === 0 ? (
-            <p>You are not a member of any leagues.</p>
+      <div className="home-inner">
+        <header>
+          <h1>Fantasy Football Dynasty</h1>
+          {!user ? (
+            <button onClick={() => setShowModal(true)}>Sign In</button>
           ) : (
-            <ul>
-              {myLeagues.map(league => (
-                <li key={league.id}>
-                  <Link to={`/league/${league.league_id}`}>
-                    <strong>{league.league_name}</strong>
-                  </Link>
-                </li>
-
-              ))}
-            </ul>
+            <>
+              <span>Welcome, {user.email}!</span>
+            </>
           )}
-        </section>
-      )}
+        </header>
 
-      <section className="leagues">
-        <h2>Available Leagues</h2>
-        <button onClick={fetchLeagues} style={{ marginBottom: '1rem' }}>
-          Refresh
-        </button>
-        <ul>
-          {leagues.map(league => (
-            <li key={league.id}>
-              <Link to={`/league/${league.id}`}>
-                <strong>{league.name}</strong> – {league.available_spots}{' '}
-                spot{league.available_spots !== 1 ? 's' : ''} open
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </section>
+        {user && (
+          <section className="my-leagues">
+            <h2>My Leagues</h2>
+            {myLeagues.length === 0 ? (
+              <p>You are not a member of any leagues.</p>
+            ) : (
+              <ul>
+                {myLeagues.map(league => (
+                  <li key={league.id}>
+                    <Link to={`/league/${league.league_id}`}>
+                      <strong>{league.league_name}</strong>
+                    </Link>
+                  </li>
+
+                ))}
+              </ul>
+            )}
+          </section>
+        )}
+
+        <section className="leagues">
+          <h2>Available Leagues</h2>
+          <button onClick={fetchLeagues} style={{ marginBottom: '1rem' }}>
+            Refresh
+          </button>
+          <ul>
+            {leagues.map(league => (
+              <li key={league.id}>
+                <Link to={`/league/${league.id}`}>
+                  <strong>{league.name}</strong> – {league.available_spots}{' '}
+                  spot{league.available_spots !== 1 ? 's' : ''} open
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
     </div>
   );
 };
