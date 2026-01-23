@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../shared/authcontext';
 import '../stylesheets/signinpage.css';
 
@@ -15,6 +16,7 @@ type ModalType = 'signin' | 'signup' | null;
 
 const SignInPage: React.FC = () => {
   const { user, loading, login, logout } = useAuth();
+  const navigate = useNavigate();
   const [modalType, setModalType] = useState<ModalType>(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -38,6 +40,8 @@ const SignInPage: React.FC = () => {
     }
     setEmail('');
     setPassword('');
+    setModalType(null);
+    navigate('/home');
   };
 
   if (loading) {
@@ -60,6 +64,7 @@ const SignInPage: React.FC = () => {
             {modalType === 'signin' && (
               <>
                 <h2>Sign In</h2>
+                {loginError && <p className="error-text">{loginError}</p>}
                 <form onSubmit={handleSignIn}>
                   <input
                     type="email"
