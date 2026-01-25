@@ -110,7 +110,7 @@ router.post('/login', async (req: Request, res: Response) => {
     setAccessCookie(res, signAccess(payload));
     setRefreshCookie(res, signRefresh(payload));
 
-    res.status(200).json({ message: 'Login successful', user: { id: user.id, username: user.username } });
+    res.status(200).json({ message: 'Login successful', user: { id: user.id, username: user.username, email: user.email } });
     return;
   } catch (err) {
     console.error('Error during login:', err);

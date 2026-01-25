@@ -2,6 +2,7 @@ export const BASE_API_URL = 'http://localhost:3001'; // Needs to be moved to a .
 
 type FetchOptions = RequestInit & {
   showError?: boolean;
+  skipErrorRedirect?: boolean;
 };
 
 export const SecureFetch = async (
@@ -14,13 +15,16 @@ export const SecureFetch = async (
       ...options,
     });
 
+    const isAuthEndpoint = endpoint.includes('/auth/');
+    const shouldSkipRedirect = options.skipErrorRedirect || isAuthEndpoint;
+
     if (!response.ok) {
       const data = await response.json().catch(() => ({
         error: 'Unknown error',
         statusCode: response.status,
       }));
 
-      if (options.showError !== false) {
+      if (options.showError !== false && !shouldSkipRedirect) {
         sessionStorage.setItem(
           'errorDetails',
           JSON.stringify({
@@ -34,7 +38,9 @@ export const SecureFetch = async (
         window.location.replace('/error');
       }
 
-      throw new Error(data.error || 'API request failed');
+      if (isAuthEndpoint || shouldSkipRedirect) {
+        console.log(`Request to ${endpoint} failed with status ${response.status}`);
+      }
     }
 
     console.log('API Response:', response);
@@ -51,6 +57,9 @@ export const URLS = {
 
   //Auth routes
   API_LOGIN_USER: `${BASE_API_URL}/auth/login`,
+  API_LOGOUT_USER: `${BASE_API_URL}/auth/logout`,
+  API_ME: `${BASE_API_URL}/auth/me`,
+  API_REFRESH: `${BASE_API_URL}/auth/refresh`,
 
   // League routes
   API_GET_LEAGUES: `${BASE_API_URL}/leagues`,

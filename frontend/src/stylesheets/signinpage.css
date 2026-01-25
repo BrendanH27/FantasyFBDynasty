@@ -1,0 +1,148 @@
+.signin {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #0f2854;
+  color: #bde8f5;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.signin header h1 {
+  margin-bottom: 2rem;
+  font-size: 2.25rem;
+  letter-spacing: 1px;
+}
+
+.signin button {
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+  margin-bottom: 5px;
+}
+
+.signin button:hover {
+  transform: translateY(-1px);
+}
+
+.signin button:active {
+  transform: translateY(0);
+}
+
+/* Primary button */
+.signin>button {
+  background-color: #FAF9F6;
+  color: #0E3386;
+  font-weight: 600;
+}
+
+.signin>button:hover {
+  background-color: #4988C4;
+}
+
+.signin span {
+  font-size: 1.1rem;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #0f2854;
+  color: #bde8f5;
+  padding: 2rem;
+  width: 100%;
+  max-width: 400px;
+  border-radius: 12px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+  animation: fadeIn 0.25s ease-in-out;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.modal h2 {
+  margin-bottom: 1.25rem;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+.modal input {
+  width: 100%;
+  padding: 0.7rem;
+  margin-bottom: 1rem;
+  border-radius: 6px;
+  border: none;
+  font-size: 1rem;
+  text-align: center;
+  background: #FAF9F6;
+  color: #0E3386;
+  box-sizing: border-box;
+}
+
+.modal input:focus {
+  outline: none;
+  border-color: #2c5364;
+}
+
+.modal input::placeholder {
+  text-align: center;
+  color: #777;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.modal-actions button[type="submit"] {
+  flex: 1;
+  background-color: #FAF9F6;
+  color: #0E3386;
+  font-weight: 600;
+  box-sizing: border-box;
+
+}
+
+.modal-actions button[type="submit"]:hover {
+  background-color: #4988C4;
+  color: white;
+}
+
+.modal-actions button[type="button"] {
+  flex: 1;
+  background-color: #ddd;
+}
+
+.modal-actions button[type="button"]:hover {
+  background-color: #ccc;
+}
+
+.error-text {
+  margin: 0 0 1rem;
+  text-align: center;
+  font-weight: 600;
+  color: #ffb3b3;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
